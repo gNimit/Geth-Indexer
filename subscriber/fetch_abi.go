@@ -11,7 +11,7 @@ import (
 var abiMap = make(map[string]string)
 
 func fetchABI(etherscanURL string) string {
-	resp, err := http.Get(etherScanAPI)
+	resp, err := http.Get(etherScanURL)
 	if err != nil {
 		log.Printf("Failed to fetch ABI from etherscan : %v\n", err)
 	}

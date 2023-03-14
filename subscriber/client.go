@@ -14,7 +14,7 @@ var (
 )
 
 // Generates a new ethclient.Client type with connection to given URL.
-func NewClient() {
+func newClient() {
 
 	client, err := ethclient.DialContext(ctx, infuraURL)
 	if err != nil {
@@ -23,5 +23,5 @@ func NewClient() {
 	defer client.Close()
 
 	filter(client)
-	listenEvents(client)
+	track(client)
 }

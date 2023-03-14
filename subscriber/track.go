@@ -6,61 +6,29 @@ import (
 	"fmt"
 	"log"
 
-	multiLot "eventIndexer.com/bindings"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-func listenEvents(client *ethclient.Client) {
-	tc, err := multiLot.NewMultiLot(address, client)
-	if err != nil {
-		log.Printf("Failed to establish connection with transaction at address %v, Error : %v\n", address, err)
+func track(client *ethclient.Client) {
+	logs := make(chan types.Log)
+	query := ethereum.FilterQuery{
+		Addresses: []common.Address{address},
 	}
 
-	watchOpts := &bind.WatchOpts{Context: context.Background(), Start: nil}
-	listenLotCreated(tc, watchOpts)
-	listenLotJoined(tc, watchOpts)
-	listenLotResolved(tc, watchOpts)
-}
+	sub, err := client.SubscribeFilterLogs(context.Background(), query, logs)
+	if err != nil {
+		log.Printf("Failed to subscriber to logs, %v\n", err)
+	}
 
-func listenLotCreated(tc *multiLot.MultiLot, watchOpts *bind.WatchOpts) {
-	channel := make(chan *multiLot.MultiLotLotCreated)
-	go func() {
-		sub, err := tc.WatchLotCreated(watchOpts, channel)
-		if err != nil {
-			log.Printf("Failed to watch LotCreated Event %v", err)
-			defer sub.Unsubscribe()
+	for {
+		select {
+		case err := <-sub.Err():
+			log.Printf("Subscription Error occured, %v\n", err)
+		case vLog := <-logs:
+			fmt.Println(vLog)
 		}
-	}()
-
-	event := <-channel
-	fmt.Println(event.Creator.Hex())
-}
-
-func listenLotJoined(tc *multiLot.MultiLot, watchOpts *bind.WatchOpts) {
-	channel := make(chan *multiLot.MultiLotLotJoined)
-	go func() {
-		sub, err := tc.WatchLotJoined(watchOpts, channel)
-		if err != nil {
-			log.Printf("Failed to watch LotCreated Event %v", err)
-			defer sub.Unsubscribe()
-		}
-	}()
-
-	event := <-channel
-	fmt.Println(event.User.Hex())
-}
-
-func listenLotResolved(tc *multiLot.MultiLot, watchOpts *bind.WatchOpts) {
-	channel := make(chan *multiLot.MultiLotLotResolved)
-	go func() {
-		sub, err := tc.WatchLotResolved(watchOpts, channel)
-		if err != nil {
-			log.Printf("Failed to watch LotCreated Event %v", err)
-			defer sub.Unsubscribe()
-		}
-	}()
-
-	event := <-channel
-	fmt.Println(event.Raw.Address.Hex())
+	}
 }
