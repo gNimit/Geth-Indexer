@@ -1,11 +1,18 @@
 package indexer
 
-func Index() {
+type eventData struct {
+	event string
+	log   map[string]interface{}
+}
+
+func Index(_event string, _vLog map[string]interface{}) {
+
 	db := connect()
 	defer db.Close()
 
-}
-
-func check() {
-
+	ed := eventData{
+		event: _event,
+		log:   _vLog,
+	}
+	upload(db, ed)
 }

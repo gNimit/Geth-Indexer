@@ -3,19 +3,19 @@ package subscriber
 
 import (
 	"context"
-	"fmt"
 	"log"
 
+	"eventIndexer.com/cli"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-func track(client *ethclient.Client) {
+func track(client *ethclient.Client, events []string, opts *cli.Options) {
 	logs := make(chan types.Log)
 	query := ethereum.FilterQuery{
-		Addresses: []common.Address{address},
+		Addresses: []common.Address{common.HexToAddress(opts.FLAGS.Address)},
 	}
 
 	sub, err := client.SubscribeFilterLogs(context.Background(), query, logs)
@@ -28,7 +28,8 @@ func track(client *ethclient.Client) {
 		case err := <-sub.Err():
 			log.Printf("Subscription Error occured, %v\n", err)
 		case vLog := <-logs:
-			fmt.Println(vLog)
+			unpackTrackLogs(vLog, events)
 		}
 	}
+
 }
