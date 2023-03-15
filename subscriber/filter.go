@@ -2,6 +2,7 @@
 package subscriber
 
 import (
+	"context"
 	"log"
 	"math/big"
 
@@ -39,7 +40,7 @@ func filter(client *ethclient.Client, opts *cli.Options) []types.Log {
 		},
 	}
 
-	logs, err := client.FilterLogs(ctx, query)
+	logs, err := client.FilterLogs(context.Background(), query)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -28,7 +28,7 @@ func track(client *ethclient.Client, events []string, opts *cli.Options) {
 		case err := <-sub.Err():
 			log.Printf("Subscription Error occured, %v\n", err)
 		case vLog := <-logs:
-			unpackTrackLogs(vLog, events)
+			unpackTrackLogs(vLog, events, opts)
 		}
 	}
 
