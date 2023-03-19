@@ -1,61 +1,26 @@
+// Package cli is used for parsing user input and reading config data.
 package cli
 
 import (
+	"github.com/spf13/viper"
 	"log"
-	"os"
-
-	"github.com/joho/godotenv"
 )
 
-type DbOptions struct {
-	HOST     string
-	PORT     string
-	USER     string
-	PASSWORD string
-	DBNAME   string
-}
+func Run() *Config {
+	//setting the name of config file
+	viper.SetConfigFile("config.yml")
+	//setting the path of config file
+	viper.AddConfigPath(".")
 
-type ApiOptions struct {
-	ETHERSCAN_URL string
-	INFURA_URL    string
-}
+	var config Config
+	if err := viper.ReadInConfig(); err != nil {
+		log.Printf("Failed to read config file, %v\n", err)
+	}
 
-type Options struct {
-	DB    DbOptions
-	API   ApiOptions
-	FLAGS FlagOptions
-}
-
-func Run() *Options {
-
-	wd, err := os.Getwd()
+	err := viper.Unmarshal(&config)
 	if err != nil {
-		log.Printf("Failed to get path to current working directory, %v\n", err)
+		log.Printf("Failed to unmarshall config file into the struct, %v\n", err)
 	}
-
-	err = godotenv.Load(wd + "/.env")
-	if err != nil {
-		log.Printf("Failed to load .env file %v\n", err)
-	}
-
-	DB := DbOptions{
-		HOST:     os.Getenv("host"),
-		PORT:     os.Getenv("port"),
-		USER:     os.Getenv("user"),
-		PASSWORD: os.Getenv("password"),
-		DBNAME:   os.Getenv("dbname"),
-	}
-
-	API := ApiOptions{
-		ETHERSCAN_URL: os.Getenv("ETHERSCAN_URL"),
-		INFURA_URL:    os.Getenv("INFURA_WS_URL"),
-	}
-
-	FLAGS := ParseArgs()
-
-	return &Options{
-		DB:    DB,
-		API:   API,
-		FLAGS: FLAGS,
-	}
+	config.Flag = ParseFlags()
+	return &config
 }
