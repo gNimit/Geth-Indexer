@@ -18,16 +18,16 @@ var (
 	to   *big.Int
 )
 
-func filter(client *ethclient.Client, opts *cli.Options) []types.Log {
+func filter(client *ethclient.Client, opts *cli.Config) []types.Log {
 
-	if opts.FLAGS.From != 0 {
-		from = big.NewInt(int64(opts.FLAGS.From))
+	if opts.Flag.From != 0 {
+		from = big.NewInt(int64(opts.Flag.From))
 	} else {
 		from = nil
 	}
 
-	if opts.FLAGS.To != 0 {
-		to = big.NewInt(int64(opts.FLAGS.To))
+	if opts.Flag.To != 0 {
+		to = big.NewInt(int64(opts.Flag.To))
 	} else {
 		to = nil
 	}
@@ -36,7 +36,7 @@ func filter(client *ethclient.Client, opts *cli.Options) []types.Log {
 		FromBlock: from,
 		ToBlock:   to,
 		Addresses: []common.Address{
-			common.HexToAddress(opts.FLAGS.Address),
+			common.HexToAddress(opts.Flag.Address),
 		},
 	}
 
@@ -45,5 +45,4 @@ func filter(client *ethclient.Client, opts *cli.Options) []types.Log {
 		log.Fatal(err)
 	}
 	return logs
-
 }
