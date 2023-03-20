@@ -7,12 +7,13 @@ import (
 	"strings"
 )
 
-func Index(eventCh chan *subscriber.Event, db *sql.DB) {
-
+func Index(eventCh chan *subscriber.Event, db *sql.DB, quit chan struct{}) {
 	for {
-		ed := <-eventCh
-		query := mapToQuery(strings.ToLower(ed.Name), ed)
-		go upload(db, query)
+		select {
+		case ed := <-eventCh:
+			query := mapToQuery(strings.ToLower(ed.Name), ed)
+			go upload(db, query)
+		}
 	}
 }
 
@@ -31,11 +32,11 @@ func mapToQuery(table string, params *subscriber.Event) string {
 
 func insertValues(keys []string, params *subscriber.Event) string {
 	values := make([]string, 0, len(keys)+4)
-	values = append(values, fmt.Sprintf("%v", params.Name), fmt.Sprintf("%v", params.BlockNumber),
-		fmt.Sprintf("%v", params.BlockHash), fmt.Sprintf("%v", params.Contract))
+	values = append(values, fmt.Sprintf("'%v'", params.Name), fmt.Sprintf("'%v'", params.BlockNumber),
+		fmt.Sprintf("'%v'", params.BlockHash), fmt.Sprintf("'%v'", params.Contract))
 
 	for _, k := range keys {
-		values = append(values, fmt.Sprintf("%v", params.Data[k]))
+		values = append(values, fmt.Sprintf("'%v'", params.Data[k]))
 	}
 	return strings.Join(values, " ,")
 }

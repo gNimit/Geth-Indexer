@@ -27,7 +27,7 @@ type Event struct {
 	Data        map[string]interface{}
 }
 
-func Subscribe(events []string, eventCh chan *Event, opts *cli.Config, quit chan struct{}) {
+func Subscribe(events []string, eventCh chan<- *Event, opts *cli.Config, quit chan struct{}) {
 	client := newClient(opts.API.EthNodeURL)
 	defer client.Close()
 

@@ -8,6 +8,6 @@ import (
 func upload(db *sql.DB, query string) {
 	_, err := db.Exec(query)
 	if err != nil {
-		log.Println(err)
+		log.Println("Failed to execute ", query, err)
 	}
 }

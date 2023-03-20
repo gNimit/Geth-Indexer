@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+const chanBufferSize = 1000
+
 func main() {
 	os.Exit(exec())
 }
@@ -21,7 +23,7 @@ func exec() int {
 		return 1
 	}
 
-	eventCh := make(chan *subscriber.Event)
+	eventCh := make(chan *subscriber.Event, chanBufferSize)
 	quitCh := make(chan struct{})
 
 	go subscriber.Subscribe(events, eventCh, opts, quitCh)
@@ -38,8 +40,7 @@ func exec() int {
 		}
 		return 0
 	}()
-
-	indexer.Index(eventCh)
+	indexer.Index(eventCh, db, quitCh)
 
 	return 0
 }
