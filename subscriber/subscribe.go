@@ -27,7 +27,7 @@ type Event struct {
 	Data        map[string]interface{}
 }
 
-func Subscribe(events []string, eventCh chan<- *Event, opts *cli.Config, quit chan struct{}) {
+func Subscribe(events []string, eventCh chan<- *Event, opts *cli.Config, quit chan bool) {
 	client := newClient(opts.API.EthNodeURL)
 	defer client.Close()
 
@@ -60,8 +60,10 @@ func Subscribe(events []string, eventCh chan<- *Event, opts *cli.Config, quit ch
 			if edata := parseEvents(events, l, c); edata != nil {
 				eventCh <- edata
 			}
-		case <-quit:
-			break
+		case stop := <-quit:
+			if stop {
+				return
+			}
 		}
 	}
 

@@ -7,12 +7,16 @@ import (
 	"strings"
 )
 
-func Index(eventCh chan *subscriber.Event, db *sql.DB, quit chan struct{}) {
+func Index(eventCh chan *subscriber.Event, db *sql.DB, quit chan bool) {
 	for {
 		select {
 		case ed := <-eventCh:
 			query := mapToQuery(strings.ToLower(ed.Name), ed)
 			go upload(db, query)
+		case quit := <-quit:
+			if quit {
+				return
+			}
 		}
 	}
 }
