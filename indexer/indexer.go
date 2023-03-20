@@ -5,11 +5,7 @@ import (
 	"fmt"
 )
 
-type eventData struct {
-	event string
-	log   map[string]interface{}
-}
-
-func Index(ed *subscriber.Event) {
+func Index(eventCh chan *subscriber.Event) {
+	ed := <-eventCh
 	fmt.Println(ed)
 }

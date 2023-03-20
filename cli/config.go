@@ -3,7 +3,7 @@ package cli
 
 // Config is Configuration Data Exported also contained user input from flags.
 type Config struct {
-	Flag     FlagOptions
+	Query    FlagOptions
 	Database DatabaseConfig
 	API      APIConfig
 }
@@ -20,6 +20,6 @@ type DatabaseConfig struct {
 // APIConfig is APIs URL for connecting to Etherscan to fetch ABI of contract
 // and establish connection with a ethereum node local or remote.
 type APIConfig struct {
-	EtherScanURL string `mapstructure:"etherscan"`
+	EtherScanAPI string `mapstructure:"etherscan"`
 	EthNodeURL   string `mapstructure:"ethnode"`
 }

@@ -16,13 +16,16 @@ func main() {
 func exec() int {
 	opts := cli.Run()
 	events := flag.Args()
-	eventCh := make(chan *subscriber.Event, 1000)
 	if len(events) == 0 {
 		log.Println("No events provided, please specify smart contract events you want application to subscribe to. Exiting Application...")
 		return 1
 	}
 
-	subscriber.Subscribe(events, eventCh, opts)
+	eventCh := make(chan *subscriber.Event)
+	quitCh := make(chan struct{})
+
+	go subscriber.Subscribe(events, eventCh, opts, quitCh)
+
 	db, err := indexer.Connect(opts.Database)
 	if err != nil {
 		log.Println(err)
@@ -36,6 +39,7 @@ func exec() int {
 		return 0
 	}()
 
-	go indexer.Index(<-eventCh)
+	indexer.Index(eventCh)
+
 	return 0
 }

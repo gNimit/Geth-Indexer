@@ -20,14 +20,14 @@ var (
 
 func filter(client *ethclient.Client, opts *cli.Config) []types.Log {
 
-	if opts.Flag.From != 0 {
-		from = big.NewInt(int64(opts.Flag.From))
+	if opts.Query.From != 0 {
+		from = big.NewInt(int64(opts.Query.From))
 	} else {
 		from = nil
 	}
 
-	if opts.Flag.To != 0 {
-		to = big.NewInt(int64(opts.Flag.To))
+	if opts.Query.To != 0 {
+		to = big.NewInt(int64(opts.Query.To))
 	} else {
 		to = nil
 	}
@@ -36,7 +36,7 @@ func filter(client *ethclient.Client, opts *cli.Config) []types.Log {
 		FromBlock: from,
 		ToBlock:   to,
 		Addresses: []common.Address{
-			common.HexToAddress(opts.Flag.Address),
+			common.HexToAddress(opts.Query.Address),
 		},
 	}
 

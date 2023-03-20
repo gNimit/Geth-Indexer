@@ -14,7 +14,7 @@ import (
 func listen(client *ethclient.Client, opts *cli.Config) ethereum.Subscription {
 	logs := make(chan types.Log)
 	query := ethereum.FilterQuery{
-		Addresses: []common.Address{common.HexToAddress(opts.Flag.Address)},
+		Addresses: []common.Address{common.HexToAddress(opts.Query.Address)},
 	}
 
 	sub, err := client.SubscribeFilterLogs(context.Background(), query, logs)

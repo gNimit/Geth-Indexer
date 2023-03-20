@@ -3,6 +3,7 @@ package subscriber
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"io"
 	"log"
@@ -10,8 +11,11 @@ import (
 	"strings"
 )
 
-func fetchABI(etherScanURL string) abi.ABI {
-	resp, err := http.Get(etherScanURL)
+const etherScanURL = "https://api-goerli.etherscan.io/api?module=contract&action=getabi&address=0xdBFC942264f5CebF8C59f4065af2EFfB92D12475&apikey=%s"
+
+func fetchABI(etherScanAPI string) abi.ABI {
+	url := fmt.Sprintf(etherScanURL, etherScanAPI)
+	resp, err := http.Get(url)
 	if err != nil {
 		log.Printf("Failed to fetch ABI from etherscan : %v\n", err)
 	}

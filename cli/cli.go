@@ -21,6 +21,6 @@ func Run() *Config {
 	if err != nil {
 		log.Printf("Failed to unmarshall config file into the struct, %v\n", err)
 	}
-	config.Flag = ParseFlags()
+	config.Query = ParseFlags()
 	return &config
 }
