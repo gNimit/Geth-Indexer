@@ -10,10 +10,11 @@ services:
     image: "postgres:15.2"
     ports:
       - "5432"
+    restart: always
     environment:
-      - POSTGRES_USER="adrem"
-      - POSTGRES_PASSWORD="149414"
-      - PGDATA=/var/lib/postgres/data/pgdata
+      - POSTGRES_USER=adrem
+      - POSTGRES_PASSWORD=149414
+      - PGDATA=var/lib/postgres/data/pgdata
 
 
 
