@@ -1,4 +1,4 @@
-FROM golang:1.20.2-slim
+FROM golang:1.20.2-bullseye
 WORKDIR /app
 COPY go.mod ./
 RUN go mod download
