@@ -12,8 +12,8 @@ services:
       - "5432"
     restart: always
     environment:
-      - POSTGRES_USER=adrem
-      - POSTGRES_PASSWORD=149414
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - PGDATA=var/lib/postgres/data/pgdata
 
 
