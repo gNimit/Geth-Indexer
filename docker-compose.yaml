@@ -1,21 +1,55 @@
-version: "3"
+version: "3.8"
+
 services:
-  app:
+  indexer:
     build:
-      dockerfile: "Dockerfile"
       context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: >
+      -rpc="https://eth.llamarpc.com,https://rpc.ankr.com/eth"
+      -chain-id=1
+      -sink=postgres
+      -pg-host=postgres
+      -pg-port=5432
+      -pg-user=postgres
+      -pg-pass=postgres
+      -pg-db=geth_indexer
+      -metrics-addr=":9090"
+      -concurrency=8
+      -chunk-size=1000
     ports:
-      - "8080"
+      - "9090:9090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   postgres:
-    image: "postgres:15.2"
-    ports:
-      - "5432"
-    restart: always
+    image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - PGDATA=var/lib/postgres/data/pgdata
+      - POSTGRES_DB=geth_indexer
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d geth_indexer"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
 
-
-
+volumes:
+  pgdata:
