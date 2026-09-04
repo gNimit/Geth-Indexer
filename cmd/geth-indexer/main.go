@@ -169,6 +169,7 @@ func main() {
 		indexer.WithMetrics(metricCollector),
 	}
 
+	// Setup Selected Sink
 	switch *sinkType {
 	case "postgres":
 		opts = append(opts, indexer.WithPostgresSink(sink.PostgresConfig{
@@ -214,12 +215,14 @@ func main() {
 
 	slog.Info("Indexer started successfully, listening for events...")
 
+	// Drain events in background
 	go func() {
 		for ev := range eventCh {
 			_ = ev
 		}
 	}()
 
+	// Block until completion or context cancellation
 	if err := idx.Wait(); err != nil && err != context.Canceled {
 		slog.Error("Indexer terminated with error", "error", err)
 		os.Exit(1)
