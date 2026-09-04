@@ -1,3 +1,8 @@
 .idea
 config.yml
 main
+bin/
+*.json
+*.tmp*
+coverage.out
+.DS_Store
